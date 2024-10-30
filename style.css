@@ -1,0 +1,71 @@
+
+canvas {
+    border: 1px solid #000;
+}
+
+h1 {
+    margin: 5px;
+}
+
+#gameArea {
+    display: flex;
+    position: relative;
+    width: 400px;
+    height: 400px;
+    border: 1px solid #000;
+    background-color: white;
+}
+
+.snake-head {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    border: 1px solid darkblue;
+    display: none;
+}
+
+.snake-body.head {
+    background-color: green;
+    border-color: darkgreen;
+}
+
+#food {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.snake-head.visible {
+    display: block;
+}
+
+#ui {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #ba62e2;
+}
+
+.snake-part {
+    width: 20px;
+    height: 20px;
+    background-color: green;
+    border: 1px solid darkgreen;
+}   
+
+.snake-segment {
+    width: 20px;
+    height: 20px;
+    background-color: green;
+    border: 1px solid darkgreen;
+}
