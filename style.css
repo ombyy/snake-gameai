@@ -10,10 +10,10 @@ h1 {
 #gameArea {
     display: flex;
     position: relative;
-    width: 400px;
-    height: 400px;
-    border: 5px solid #000;
-    background-color: white;
+    width: 420px;
+    height: 420px;
+    border: 5px solid #2bdfe644;
+    background-color: rgba(74, 64, 168, 0.582);
 }
 
 .snake-head {
@@ -23,6 +23,30 @@ h1 {
     background-color: blue;
     border: 1px solid darkblue;
     display: none;
+}
+
+#score {
+    margin-right: 100px;
+    background-color: #8d86eead;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+#timer {
+    border-color: aquamarine;
+    background-color: #8d86eead;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+button {
+    background-color: #8d86eead;
+    padding: 4px;
+    border-radius: 10px;
+    border-color: aquamarine;
+    color: aqua;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-large;
 }
 
 .snake-body.head {
@@ -42,10 +66,16 @@ h1 {
 }
 
 #ui {
+    border-color: aquamarine;
+    border-radius: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-small;
+    color:aqua;
     display: flex;
     flex-direction: row;
     margin-top: 20px;
 }
+
 body {
     display: flex;
     flex-direction: column;
@@ -53,7 +83,9 @@ body {
     justify-content: center;
     height: 100vh;
     margin: 0;
-    background-color: #ba62e2;
+    background-image: url('img/Best\ Pixel\ Art\ Ever.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .snake-part {

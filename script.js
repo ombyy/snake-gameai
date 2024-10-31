@@ -6,6 +6,7 @@ let direction = null;
 let gameInterval;
 let timer = 0;
 let timerInterval;
+let scoreInterval;
 let food = document.getElementById('food');
 let foodPosition = { x: 0, y: 0 };
 
@@ -58,7 +59,7 @@ function updateTimerDisplay() {
     let formattedTime = 
         String(minutes).padStart(2, '0') + ':' + 
         String(seconds).padStart(2, '0');
-    document.getElementById('timer').innerText = formattedTime;
+    document.getElementById('timer').innerText = 'Survival: ' + formattedTime;
 }
 
 function placeFood() {
@@ -85,7 +86,19 @@ function handleFoodCollision() {
     if (checkFoodCollision()) {
         growSnake(); 
         placeFood(); 
+        updateScore(); // Update the score when food is eaten
     }
+}
+
+function updateScore(points = 10) {
+    let scoreElement = document.getElementById('score');
+    let scoreText = scoreElement.innerText;
+    let score = parseInt(scoreText.split(': ')[1], 10); // Extract the current score number
+    if (isNaN(score)) {
+        score = 0; // Initialize score if it's NaN
+    }
+    score+= points;
+    scoreElement.innerText = 'Score: ' + score;
 }
 
 function growSnake() {
@@ -95,8 +108,25 @@ function growSnake() {
         newSegment.className = 'snake-segment';
         newSegment.style.width = box + 'px';
         newSegment.style.height = box + 'px';
-        newSegment.style.left = lastSegment.style.left;
-        newSegment.style.top = lastSegment.style.top;
+
+        // Position the new segment based on the direction of the last segment
+        let lastSegmentX = parseInt(lastSegment.style.left, 10);
+        let lastSegmentY = parseInt(lastSegment.style.top, 10);
+
+        if (direction === 'RIGHT') {
+            newSegment.style.left = (lastSegmentX - box) + 'px';
+            newSegment.style.top = lastSegmentY + 'px';
+        } else if (direction === 'LEFT') {
+            newSegment.style.left = (lastSegmentX + box) + 'px';
+            newSegment.style.top = lastSegmentY + 'px';
+        } else if (direction === 'UP') {
+            newSegment.style.left = lastSegmentX + 'px';
+            newSegment.style.top = (lastSegmentY + box) + 'px';
+        } else if (direction === 'DOWN') {
+            newSegment.style.left = lastSegmentX + 'px';
+            newSegment.style.top = (lastSegmentY - box) + 'px';
+        }
+
         gameArea.appendChild(newSegment);
         snakeHead.push(newSegment); 
         console.log('Snake grew:', snakeHead);
@@ -143,9 +173,31 @@ function moveSnake() {
 
         console.log('Snake moved:', snakeHead);
         handleFoodCollision(); 
+
+        // Check for self-collision
+        if (checkSelfCollision()) {
+            gameOver();
+        }
     } catch (error) {
         console.error('Error moving snake:', error);
     }
+}
+
+function checkSelfCollision() {
+    for (let i = 1; i < snakeHead.length; i++) {
+        if (position.x === parseInt(snakeHead[i].style.left, 10) &&
+            position.y === parseInt(snakeHead[i].style.top, 10)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function gameOver() {
+    clearInterval(gameInterval);
+    clearInterval(timerInterval);
+    clearInterval(scoreInterval);
+    alert('Game Over! Your score is ' + document.getElementById('score').innerText.split(': ')[1]);
 }
 
 function clearsnake() {
@@ -155,18 +207,45 @@ function clearsnake() {
     snakeHead = [];
 }
 
+function clearscore() {
+    document.getElementById('score').innerText = 'Score: 0';
+}
+
 function resettmer() {
     clearInterval(timerInterval);
     document.getElementById('timer').innerText = '00:00';
 }
 
+function startScoreInterval() {
+    scoreInterval = setInterval(() => updateScore(10), 10000); // Add 10 to score every 10 seconds
+}
+
+function stopscoreInterval() {
+    clearInterval(scoreInterval);
+}
+
+function clearScoreInterval() {
+    clearInterval(scoreInterval);
+}
+
 document.getElementById('startButton').addEventListener('click', function() {
     clearsnake();
     resettmer();
+    clearscore();
+    stopscoreInterval();
     initializeSnake();
     direction = null;
     if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(moveSnake, 200);
     startTimer();
     placeFood();
+    startScoreInterval(); // Start the score interval
+});
+
+document.getElementById('resetButton').addEventListener('click', function() {
+    clearScoreInterval(); // Clear the score interval
+    clearInterval(gameInterval);
+    clearsnake();
+    resettmer();
+    clearscore();
 });
