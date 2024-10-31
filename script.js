@@ -107,6 +107,13 @@ function growSnake() {
 
 function moveSnake() {
     try {
+        // Store the current positions of all segments
+        let segmentPositions = snakeHead.map(segment => ({
+            x: parseInt(segment.style.left, 10),
+            y: parseInt(segment.style.top, 10)
+        }));
+
+        // Update the head position based on the direction
         if (direction === 'RIGHT') {
             position.x += box;
         } else if (direction === 'LEFT') {
@@ -117,20 +124,21 @@ function moveSnake() {
             position.y += box;
         }
 
+        // Boundary checks to keep the snake head inside the game area
         let gameAreaRect = gameArea.getBoundingClientRect();
-
-        
         if (position.x >= gameAreaRect.width) position.x = gameAreaRect.width - box;
+        if (position.x < 0) position.x = 0; // Added check for left boundary
         if (position.y < 0) position.y = 0;
         if (position.y >= gameAreaRect.height) position.y = gameAreaRect.height - box;
 
+        // Move the head to the new position
+        snakeHead[0].style.left = position.x + 'px';
+        snakeHead[0].style.top = position.y + 'px';
+
+        // Move each segment to the position of the segment in front of it
         for (let i = snakeHead.length - 1; i > 0; i--) {
-            snakeHead[i].style.left = snakeHead[i - 1].style.left;
-            snakeHead[i].style.top = snakeHead[i - 1].style.top;
-        }
-        if (snakeHead.length > 0) {
-            snakeHead[0].style.left = position.x + 'px';
-            snakeHead[0].style.top = position.y + 'px';
+            snakeHead[i].style.left = segmentPositions[i - 1].x + 'px';
+            snakeHead[i].style.top = segmentPositions[i - 1].y + 'px';
         }
 
         console.log('Snake moved:', snakeHead);
