@@ -7,11 +7,11 @@ let gameInterval;
 let timer = 0;
 let timerInterval;
 let scoreInterval;
-let enemySpawnInterval; // Variable to store the interval ID
+let enemySpawnInterval; 
 let food = document.getElementById('food');
-let foodItems = []; // Array to store multiple food items
+let foodItems = []; 
 
-// Hide the initial food element
+
 food.style.display = 'none';
 
 document.addEventListener('keydown', keyDown);
@@ -68,12 +68,12 @@ function updateTimerDisplay() {
 }
 
 function placeFood(numFoodItems = 3) { 
-    // Clear existing food items
+    
     foodItems.forEach(item => gameArea.removeChild(item));
     foodItems = [];
 
     for (let i = 0; i < numFoodItems; i++) {
-        let foodItem = food.cloneNode(true); // Clone the existing food element
+        let foodItem = food.cloneNode(true); 
         let maxX = gameArea.clientWidth - box;
         let maxY = gameArea.clientHeight - box;
         let foodX = Math.floor(Math.random() * maxX);
@@ -82,7 +82,7 @@ function placeFood(numFoodItems = 3) {
         foodItem.style.top = foodY + 'px';
         foodItem.style.display = 'block';
         gameArea.appendChild(foodItem);
-        foodItems.push(foodItem); // Add the food item to the array
+        foodItems.push(foodItem); 
     }
 }
 
@@ -94,8 +94,8 @@ function checkFoodCollision() {
             position.x + snakeHead[0].clientWidth > foodX &&
             position.y < foodY + box &&
             position.y + snakeHead[0].clientHeight > foodY) {
-            gameArea.removeChild(foodItem); // Remove the eaten food item
-            foodItems = foodItems.filter(item => item !== foodItem); // Remove the item from the array
+            gameArea.removeChild(foodItem); 
+            foodItems = foodItems.filter(item => item !== foodItem); 
             return true;
         }
     }
@@ -106,18 +106,18 @@ function handleFoodCollision() {
     if (checkFoodCollision()) {
         growSnake(); 
         if (foodItems.length === 0) {
-            placeFood(); // Replenish food items if all are eaten
+            placeFood(); 
         }
-        updateScore(); // Update the score when food is eaten
+        updateScore(); 
     }
 }
 
 function updateScore(points = 10) {
     let scoreElement = document.getElementById('score');
     let scoreText = scoreElement.innerText;
-    let score = parseInt(scoreText.split(': ')[1], 10); // Extract the current score number
+    let score = parseInt(scoreText.split(': ')[1], 10); 
     if (isNaN(score)) {
-        score = 0; // Initialize score if it's NaN
+        score = 0; 
     }
     score+= points;
     scoreElement.innerText = 'Score: ' + score;
@@ -126,9 +126,9 @@ function updateScore(points = 10) {
 function NegupdateScore(points = -10) {
     let scoreElement = document.getElementById('score');
     let scoreText = scoreElement.innerText;
-    let score = parseInt(scoreText.split(': ')[1], 10); // Extract the current score number
+    let score = parseInt(scoreText.split(': ')[1], 10); 
     if (isNaN(score)) {
-        score = 0; // Initialize score if it's NaN
+        score = 0; 
     }
     score += points;
     scoreElement.innerText = 'Score: ' + score;
@@ -142,7 +142,7 @@ function growSnake() {
         newSegment.style.width = box + 'px';
         newSegment.style.height = box + 'px';
 
-        // Position the new segment based on the direction of the last segment
+        
         let lastSegmentX = parseInt(lastSegment.style.left, 10);
         let lastSegmentY = parseInt(lastSegment.style.top, 10);
 
@@ -170,13 +170,12 @@ function growSnake() {
 
 function moveSnake() {
     try {
-        // Store the current positions of all segments
+       
         let segmentPositions = snakeHead.map(segment => ({
             x: parseInt(segment.style.left, 10),
             y: parseInt(segment.style.top, 10)
         }));
 
-        // Update the head position based on the direction
         if (direction === 'RIGHT') {
             position.x += box;
         } else if (direction === 'LEFT') {
@@ -187,18 +186,18 @@ function moveSnake() {
             position.y += box;
         }
 
-        // Boundary checks to keep the snake head inside the game area
+       
         let gameAreaRect = gameArea.getBoundingClientRect();
         if (position.x >= gameAreaRect.width) position.x = gameAreaRect.width - box;
-        if (position.x < 0) position.x = 0; // Added check for left boundary
+        if (position.x < 0) position.x = 0; 
         if (position.y < 0) position.y = 0;
         if (position.y >= gameAreaRect.height) position.y = gameAreaRect.height - box;
 
-        // Move the head to the new position
+        
         snakeHead[0].style.left = position.x + 'px';
         snakeHead[0].style.top = position.y + 'px';
 
-        // Move each segment to the position of the segment in front of it
+        
         for (let i = snakeHead.length - 1; i > 0; i--) {
             snakeHead[i].style.left = segmentPositions[i - 1].x + 'px';
             snakeHead[i].style.top = segmentPositions[i - 1].y + 'px';
@@ -208,14 +207,14 @@ function moveSnake() {
         zen();
         handleFoodCollision(); 
 
-        // Check for self-collision
+      
         if (checkSelfCollision()) {
             gameOver();
         }
 
-        // Check for enemy collision and remove the enemy if a collision is detected
+        
         if (handleEnemyCollision()) {
-            NegupdateScore(); // Decrease the score when an enemy is hit
+            NegupdateScore(); 
         }
     } catch (error) {
         console.error('Error moving snake:', error);
@@ -241,13 +240,13 @@ function handleEnemyCollision() {
             position.x + snakeHead[0].clientWidth > enemyX &&
             position.y < enemyY + box &&
             position.y + snakeHead[0].clientHeight > enemyY) {
-            createEffect(enemyX, enemyY); // Create an effect at the enemy position
-            gameArea.removeChild(enemy); // Remove the enemy element
+            createEffect(enemyX, enemyY); 
+            gameArea.removeChild(enemy); 
             if (snakeHead.length > 1) {
-                let lastSegment = snakeHead.pop(); // Remove the last segment of the snake
+                let lastSegment = snakeHead.pop(); 
                 gameArea.removeChild(lastSegment);
             } else {
-                gameOver(); // End the game if the snake has only one segment left
+                gameOver(); 
             }
             return true;
         }
@@ -259,8 +258,8 @@ function gameOver() {
     clearInterval(gameInterval);
     clearInterval(timerInterval);
     clearInterval(scoreInterval);
-    createEffect(position.x, position.y); // Create an effect at the snake head position
-    clearEnemies(); // Clear enemies
+    createEffect(position.x, position.y); 
+    clearEnemies(); 
     alert('BIG SLAM! unlucky, Your score is ' + document.getElementById('score').innerText.split(': ')[1]);
 }
 
@@ -276,7 +275,7 @@ function clearscore() {
 }
 
 function clearEnemies() {
-    clearInterval(enemySpawnInterval); // Stop the enemy spawn interval
+    clearInterval(enemySpawnInterval); 
     let enemies = document.querySelectorAll('.enemy');
     enemies.forEach(enemy => gameArea.removeChild(enemy));
 }
@@ -287,7 +286,7 @@ function resettmer() {
 }
 
 function startScoreInterval() {
-    scoreInterval = setInterval(() => updateScore(10), 10000); // Add 10 to score every 10 seconds
+    scoreInterval = setInterval(() => updateScore(10), 10000); 
 }
 
 function clearScoreInterval() {
@@ -295,7 +294,7 @@ function clearScoreInterval() {
 }
 
 function enemyspawninterval() {
-    enemySpawnInterval = setInterval(spawnenemy, 10000); // Call spawnenemy every second
+    enemySpawnInterval = setInterval(spawnenemy, 10000); 
 }
 
 function zen(offsetX = -90, offsetY = -90) {
@@ -303,14 +302,14 @@ function zen(offsetX = -90, offsetY = -90) {
     let snakeHeadX = parseInt(snakeHead[0].style.left, 10);
     let snakeHeadY = parseInt(snakeHead[0].style.top, 10);
 
-    // Determine the direction of movement
+    
     if (direction === 'LEFT') {
-        zenDiv.style.transform = 'scaleX(-1)'; // Flip horizontally
+        zenDiv.style.transform = 'scaleX(-1)'; 
     } else if (direction === 'RIGHT') {
-        zenDiv.style.transform = 'scaleX(1)'; // Return to normal
+        zenDiv.style.transform = 'scaleX(1)'; 
     }
 
-    // Move the zen div to the offset position relative to the snake head
+   
     zenDiv.style.left = (snakeHeadX + offsetX) + 'px';
     zenDiv.style.top = (snakeHeadY + offsetY) + 'px';
     
@@ -320,10 +319,10 @@ function zen(offsetX = -90, offsetY = -90) {
 function spawnenemy() {
     let enemy = document.createElement('div');
     enemy.classList.add('enemy');
-    enemy.style.width = '150px'; /* Match the width defined in CSS */
-    enemy.style.height = '75px'; /* Match the height defined in CSS */
-    let maxX = gameArea.clientWidth - 150; /* Adjust for the new width */
-    let maxY = gameArea.clientHeight - 50; /* Adjust for the new height */
+    enemy.style.width = '150px'; 
+    enemy.style.height = '75px'; 
+    let maxX = gameArea.clientWidth - 150; 
+    let maxY = gameArea.clientHeight - 50; 
     let enemyX = Math.floor(Math.random() * maxX);
     let enemyY = Math.floor(Math.random() * maxY);
     enemy.style.left = enemyX + 'px';
@@ -331,10 +330,10 @@ function spawnenemy() {
     gameArea.appendChild(enemy);
     console.log('Enemy spawned at:', enemyX, enemyY); 
 
-    // Move the enemy towards the snake at regular intervals
+  
     setInterval(() => moveEnemyTowardsSnake(enemy), 15);
 
-    // Remove the enemy after 5 seconds with effect
+
     setTimeout(() => {
         if (gameArea.contains(enemy)) {
             createEffect(enemyX, enemyY);
@@ -352,12 +351,12 @@ function createEffect(x, y) {
     effect.style.top = y + 'px';
     gameArea.appendChild(effect);
 
-    // Remove the effect after the animation completes
+   
     setTimeout(() => {
         if (gameArea.contains(effect)) {
             gameArea.removeChild(effect);
         }
-    }, 500); // Match the duration of the effect animation
+    }, 500); 
 }
 
 function moveEnemyTowardsSnake(enemy) {
@@ -367,17 +366,17 @@ function moveEnemyTowardsSnake(enemy) {
     let snakeHeadY = parseInt(snakeHead[0].style.top, 10);
 
     if (enemyX < snakeHeadX) {
-        enemyX += 1; // Move right
-        enemy.style.transform = 'scaleX(1)'; // Return to normal
+        enemyX += 1; 
+        enemy.style.transform = 'scaleX(1)';
     } else if (enemyX > snakeHeadX) {
-        enemyX -= 1; // Move left
-        enemy.style.transform = 'scaleX(-1)'; // Flip horizontally
+        enemyX -= 1;
+        enemy.style.transform = 'scaleX(-1)'; 
     }
 
     if (enemyY < snakeHeadY) {
-        enemyY += 1; // Move down
+        enemyY += 1; 
     } else if (enemyY > snakeHeadY) {
-        enemyY -= 1; // Move up
+        enemyY -= 1; 
     }
 
     enemy.style.left = enemyX + 'px';
@@ -398,14 +397,14 @@ document.getElementById('startButton').addEventListener('click', function() {
     startTimer();
     placeFood();
     startScoreInterval();
-    enemyspawninterval(); // Start the enemy spawn interval
+    enemyspawninterval(); 
 });
 
 document.getElementById('resetButton').addEventListener('click', function() {
-    clearScoreInterval(); // Clear the score interval
+    clearScoreInterval();
     clearInterval(gameInterval);
     clearsnake();
     resettmer();
     clearscore();
-    clearEnemies(); // Clear enemies
+    clearEnemies(); 
 });
