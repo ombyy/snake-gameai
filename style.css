@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'fibberish';
+    src: url('fonts/fibberish.ttf') format('ttf'),
+            url('fonts/fibberish.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
 
 canvas {
     border: 1px solid #000;
@@ -7,11 +16,34 @@ h1 {
     margin: 5px;
 }
 
+.enemy {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-color: #05000000;
+    background-image: url('img/rein-pixelated-earthshatter-v0-e7o3von41w1c1.gif');
+    background-size: cover;
+    
+
+}
+
+.zen {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 300px;
+    background-image: url('img/tumblr_ohrvszbD2u1ufdtcro3_r1_640.webp');
+    background-size: cover;
+    display: block;
+}
+
 #gameArea {
     display: flex;
     position: relative;
     width: 420px;
     height: 420px;
+    background-image: url('img/+100\ Pixel\ Art\ Masterpieces.gif');
+    background-size: cover;
     border: 5px solid #2bdfe644;
     background-color: rgba(74, 64, 168, 0.582);
 }
@@ -20,9 +52,8 @@ h1 {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: blue;
-    border: 1px solid darkblue;
-    display: none;
+    background-color: rgba(63, 143, 143, 0);
+    border: 1px solid rgba(0, 100, 0, 0);
 }
 
 #score {
@@ -56,9 +87,23 @@ button {
 
 #food {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: red;
+    width: 40px;
+    height: 40px;
+    background-image: url('img/edf254eea0ca51397e883b6908ad57cb.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+ 
+}
+
+#backgroundVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1; /* Ensure the video is behind other content */
 }
 
 .snake-head.visible {
@@ -68,7 +113,7 @@ button {
 #ui {
     border-color: aquamarine;
     border-radius: 10px;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'fibberish';
     font-size: x-small;
     color:aqua;
     display: flex;
@@ -83,7 +128,7 @@ body {
     justify-content: center;
     height: 100vh;
     margin: 0;
-    background-image: url('img/Best\ Pixel\ Art\ Ever.gif');
+    background-clip: url('img/j18qwtm4fbva1.mp4');
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -97,8 +142,20 @@ body {
 
 .snake-segment {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: green;
-    border: 1px solid darkgreen;
+    width: 10px;
+    height: 10px;
+    background-image: url('img/EnergyOrb.webp');
+    background-size: cover;
+    filter: hue-rotate(182deg);
+}
+
+.effect {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-image: url('img/d6bbrxe-b017a61b-b988-4e09-adbd-56f50ede0ab6.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block;
 }
