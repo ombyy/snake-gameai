@@ -56,6 +56,27 @@ function startTimer() {
         updateTimerDisplay();
         console.log(timer);
     }, 1000);
+
+    // Set up a timer to spawn megafood after 30 seconds
+    setTimeout(() => {
+        console.log('30 seconds passed, spawning megafood');
+        spawnMegaFood();
+    }, 30000); // 30 seconds in milliseconds
+}
+
+function spawnMegaFood() {
+    let megaFood = document.createElement('div');
+    megaFood.classList.add('megafood');
+    megaFood.style.width = '30px';
+    megaFood.style.height = '30px';
+    let maxX = gameArea.clientWidth - 30;
+    let maxY = gameArea.clientHeight - 30;
+    let megaFoodX = Math.floor(Math.random() * maxX);
+    let megaFoodY = Math.floor(Math.random() * maxY);
+    megaFood.style.left = megaFoodX + 'px';
+    megaFood.style.top = megaFoodY + 'px';
+    gameArea.appendChild(megaFood);
+    console.log('Megafood spawned at:', megaFoodX, megaFoodY);
 }
 
 function updateTimerDisplay() {
@@ -67,7 +88,7 @@ function updateTimerDisplay() {
     document.getElementById('timer').innerText = 'Survival: ' + formattedTime;
 }
 
-function placeFood(numFoodItems = 3) { 
+function placeFood(numFoodItems = 20) { 
     
     foodItems.forEach(item => gameArea.removeChild(item));
     foodItems = [];
@@ -104,65 +125,84 @@ function checkFoodCollision() {
 
 function handleFoodCollision() {
     if (checkFoodCollision()) {
-        growSnake(); 
+        growSnake();
         if (foodItems.length === 0) {
-            placeFood(); 
+            placeFood();
         }
-        updateScore(); 
+        updateScore();
+    }
+
+    // Check for collision with megafood
+    let megaFood = document.querySelector('.megafood');
+    if (megaFood) {
+        let megaFoodX = parseInt(megaFood.style.left, 10);
+        let megaFoodY = parseInt(megaFood.style.top, 10);
+        if (position.x < megaFoodX + box &&
+            position.x + snakeHead[0].clientWidth > megaFoodX &&
+            position.y < megaFoodY + box &&
+            position.y + snakeHead[0].clientHeight > megaFoodY) {
+            gameArea.removeChild(megaFood);
+            growSnake(3); // Grow the snake by 3 segments
+            updateScore(30); // Increase the score by 30 points
+        }
     }
 }
 
 function updateScore(points = 10) {
     let scoreElement = document.getElementById('score');
     let scoreText = scoreElement.innerText;
-    let score = parseInt(scoreText.split(': ')[1], 10); 
+    let score = parseInt(scoreText.split(': ')[1], 10);
     if (isNaN(score)) {
-        score = 0; 
+        score = 0;
     }
-    score+= points;
+    score += points;
     scoreElement.innerText = 'Score: ' + score;
+
+    displayscoreonchar(points > 0 ? `+${points}` : `${points}`);
 }
 
 function NegupdateScore(points = -10) {
     let scoreElement = document.getElementById('score');
     let scoreText = scoreElement.innerText;
-    let score = parseInt(scoreText.split(': ')[1], 10); 
+    let score = parseInt(scoreText.split(': ')[1], 10);
     if (isNaN(score)) {
-        score = 0; 
+        score = 0;
     }
     score += points;
     scoreElement.innerText = 'Score: ' + score;
+
+    displayscoreonchar(points > 0 ? `+${points}` : `${points}`);
 }
 
-function growSnake() {
+function growSnake(times = 1) {
     try {
-        const lastSegment = snakeHead[snakeHead.length - 1];
-        const newSegment = document.createElement('div');
-        newSegment.className = 'snake-segment';
-        newSegment.style.width = box + 'px';
-        newSegment.style.height = box + 'px';
+        for (let t = 0; t < times; t++) {
+            const lastSegment = snakeHead[snakeHead.length - 1];
+            const newSegment = document.createElement('div');
+            newSegment.className = 'snake-segment';
+            newSegment.style.width = box + 'px';
+            newSegment.style.height = box + 'px';
 
-        
-        let lastSegmentX = parseInt(lastSegment.style.left, 10);
-        let lastSegmentY = parseInt(lastSegment.style.top, 10);
+            let lastSegmentX = parseInt(lastSegment.style.left, 10);
+            let lastSegmentY = parseInt(lastSegment.style.top, 10);
 
-        if (direction === 'RIGHT') {
-            newSegment.style.left = (lastSegmentX - box) + 'px';
-            newSegment.style.top = lastSegmentY + 'px';
-        } else if (direction === 'LEFT') {
-            newSegment.style.left = (lastSegmentX + box) + 'px';
-            newSegment.style.top = lastSegmentY + 'px';
-        } else if (direction === 'UP') {
-            newSegment.style.left = lastSegmentX + 'px';
-            newSegment.style.top = (lastSegmentY + box) + 'px';
-        } else if (direction === 'DOWN') {
-            newSegment.style.left = lastSegmentX + 'px';
-            newSegment.style.top = (lastSegmentY - box) + 'px';
+            if (direction === 'RIGHT') {
+                newSegment.style.left = (lastSegmentX - box) + 'px';
+                newSegment.style.top = lastSegmentY + 'px';
+            } else if (direction === 'LEFT') {
+                newSegment.style.left = (lastSegmentX + box) + 'px';
+                newSegment.style.top = lastSegmentY + 'px';
+            } else if (direction === 'UP') {
+                newSegment.style.left = lastSegmentX + 'px';
+                newSegment.style.top = (lastSegmentY + box) + 'px';
+            } else if (direction === 'DOWN') {
+                newSegment.style.left = lastSegmentX + 'px';
+                newSegment.style.top = (lastSegmentY - box) + 'px';
+            }
+
+            gameArea.appendChild(newSegment);
+            snakeHead.push(newSegment);
         }
-
-        gameArea.appendChild(newSegment);
-        snakeHead.push(newSegment); 
-        console.log('Snake grew:', snakeHead);
     } catch (error) {
         console.error('Error growing snake:', error);
     }
@@ -170,7 +210,6 @@ function growSnake() {
 
 function moveSnake() {
     try {
-       
         let segmentPositions = snakeHead.map(segment => ({
             x: parseInt(segment.style.left, 10),
             y: parseInt(segment.style.top, 10)
@@ -186,35 +225,35 @@ function moveSnake() {
             position.y += box;
         }
 
-       
         let gameAreaRect = gameArea.getBoundingClientRect();
         if (position.x >= gameAreaRect.width) position.x = gameAreaRect.width - box;
-        if (position.x < 0) position.x = 0; 
+        if (position.x < 0) position.x = 0;
         if (position.y < 0) position.y = 0;
         if (position.y >= gameAreaRect.height) position.y = gameAreaRect.height - box;
 
-        
         snakeHead[0].style.left = position.x + 'px';
         snakeHead[0].style.top = position.y + 'px';
 
-        
         for (let i = snakeHead.length - 1; i > 0; i--) {
             snakeHead[i].style.left = segmentPositions[i - 1].x + 'px';
             snakeHead[i].style.top = segmentPositions[i - 1].y + 'px';
         }
 
-        console.log('Snake moved:', snakeHead);
-        zen();
         handleFoodCollision(); 
+        zen();
 
-      
         if (checkSelfCollision()) {
             gameOver();
         }
 
-        
         if (handleEnemyCollision()) {
-            NegupdateScore(); 
+            NegupdateScore();
+        }
+
+        
+        let zenText = document.getElementById('zenText');
+        if (zenText.style.display === 'block') {
+            displayscoreonchar(zenText.innerText);
         }
     } catch (error) {
         console.error('Error moving snake:', error);
@@ -254,13 +293,22 @@ function handleEnemyCollision() {
     return false;
 }
 
-function gameOver() {
+function resetGame() {
     clearInterval(gameInterval);
     clearInterval(timerInterval);
     clearInterval(scoreInterval);
+    clearInterval(enemySpawnInterval);
+    clearsnake();
+    clearscore();
+    resettmer();
+    clearEnemies();
+    direction = null;
+}
+
+function gameOver() {
     createEffect(position.x, position.y); 
-    clearEnemies(); 
     alert('BIG SLAM! unlucky, Your score is ' + document.getElementById('score').innerText.split(': ')[1]);
+    resetGame();
 }
 
 function clearsnake() {
@@ -293,8 +341,9 @@ function clearScoreInterval() {
     clearInterval(scoreInterval);
 }
 
-function enemyspawninterval() {
-    enemySpawnInterval = setInterval(spawnenemy, 10000); 
+function enemyspawninterval(interval = 10000, numEnemies = 1) {
+    clearInterval(enemySpawnInterval); // Clear any existing interval
+    enemySpawnInterval = setInterval(() => spawnenemy(numEnemies), interval);
 }
 
 function zen(offsetX = -90, offsetY = -90) {
@@ -316,33 +365,88 @@ function zen(offsetX = -90, offsetY = -90) {
     console.log('Zen moved to:', snakeHeadX + offsetX, snakeHeadY + offsetY);
 }
 
-function spawnenemy() {
-    let enemy = document.createElement('div');
-    enemy.classList.add('enemy');
-    enemy.style.width = '150px'; 
-    enemy.style.height = '75px'; 
-    let maxX = gameArea.clientWidth - 150; 
-    let maxY = gameArea.clientHeight - 50; 
-    let enemyX = Math.floor(Math.random() * maxX);
-    let enemyY = Math.floor(Math.random() * maxY);
-    enemy.style.left = enemyX + 'px';
-    enemy.style.top = enemyY + 'px';
-    gameArea.appendChild(enemy);
-    console.log('Enemy spawned at:', enemyX, enemyY); 
+let isDisplayingScore = false;
 
-  
-    setInterval(() => moveEnemyTowardsSnake(enemy), 15);
+function displayscoreonchar(text) {
+    let zenText = document.getElementById('zenText');
+    let existingClone = document.getElementById('zenText1');
+    let snakeHeadX = parseInt(snakeHead[0].style.left, 10);
+    let snakeHeadY = parseInt(snakeHead[0].style.top, 10);
 
+    let textColor = text.startsWith('-') ? 'red' : 'rgb(224, 192, 11)';
 
-    setTimeout(() => {
-        if (gameArea.contains(enemy)) {
-            createEffect(enemyX, enemyY);
-            gameArea.removeChild(enemy);
-            console.log('Enemy removed after 5 seconds:', enemyX, enemyY);
+    if (zenText.style.display === 'block') {
+        if (existingClone) {
+            existingClone.style.left = snakeHeadX + 'px';
+            existingClone.style.top = (snakeHeadY - 30) + 'px';
+            existingClone.innerText = text;
+            existingClone.style.color = textColor;
+            existingClone.style.display = 'block';
+            existingClone.classList.add('animate-move-down-fade-out');
+
+            setTimeout(() => {
+                existingClone.style.display = 'none';
+                existingClone.classList.remove('animate-move-down-fade-out');
+            }, 500);
+        } else {
+            let newZenText = zenText.cloneNode(true);
+            newZenText.id = 'zenText1';
+            newZenText.style.left = snakeHeadX + 'px';
+            newZenText.style.top = (snakeHeadY - 30) + 'px';
+            newZenText.innerText = text;
+            newZenText.style.color = textColor;
+            newZenText.style.display = 'block';
+            newZenText.classList.add('animate-move-down-fade-out');
+            gameArea.appendChild(newZenText);
+
+            setTimeout(() => {
+                newZenText.style.display = 'none';
+                newZenText.classList.remove('animate-move-down-fade-out');
+                gameArea.removeChild(newZenText);
+            }, 500);
         }
-    }, 5000);
+    } else {
+        zenText.style.left = snakeHeadX + 'px';
+        zenText.style.top = (snakeHeadY - 30) + 'px';
+        zenText.innerText = text;
+        zenText.style.color = textColor;
+        zenText.style.display = 'block';
+        zenText.classList.add('animate-move-down-fade-out');
+
+        setTimeout(() => {
+            zenText.style.display = 'none';
+            zenText.classList.remove('animate-move-down-fade-out');
+        }, 500);
+    }
+
+    console.log('Score text displayed:', text);
 }
 
+function spawnenemy(numEnemies = 1) {
+    for (let i = 0; i < numEnemies; i++) {
+        let enemy = document.createElement('div');
+        enemy.classList.add('enemy');
+        enemy.style.width = '150px';
+        enemy.style.height = '75px';
+        let maxX = gameArea.clientWidth - 150;
+        let maxY = gameArea.clientHeight - 50;
+        let enemyX = Math.floor(Math.random() * maxX);
+        let enemyY = Math.floor(Math.random() * maxY);
+        enemy.style.left = enemyX + 'px';
+        enemy.style.top = enemyY + 'px';
+        gameArea.appendChild(enemy);
+        console.log('Enemy spawned at:', enemyX, enemyY);
+
+        setInterval(() => moveEnemyTowardsSnake(enemy), 15);
+
+        setTimeout(() => {
+            if (gameArea.contains(enemy)) {
+                createEffect(enemyX, enemyY);
+                gameArea.removeChild(enemy);
+            }
+        }, 5000);
+    }
+}
 
 function createEffect(x, y) {
     let effect = document.createElement('div');
@@ -384,14 +488,8 @@ function moveEnemyTowardsSnake(enemy) {
 }
 
 document.getElementById('startButton').addEventListener('click', function() {
-    clearsnake();
-    resettmer();
-    clearScoreInterval();
-    clearscore();
+    resetGame();
     initializeSnake();
-    clearEnemies();
-    direction = null;
-    if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(moveSnake, 200);
     zen();
     startTimer();
@@ -401,10 +499,25 @@ document.getElementById('startButton').addEventListener('click', function() {
 });
 
 document.getElementById('resetButton').addEventListener('click', function() {
-    clearScoreInterval();
-    clearInterval(gameInterval);
-    clearsnake();
-    resettmer();
-    clearscore();
-    clearEnemies(); 
+    resetGame();
+});
+
+document.getElementById('W').addEventListener('click', function() {
+    direction = 'UP';
+    moveSnake();
+});
+
+document.getElementById('A').addEventListener('click', function() {
+    direction = 'LEFT';
+    moveSnake();
+});
+
+document.getElementById('S').addEventListener('click', function() {
+    direction = 'DOWN';
+    moveSnake();
+});
+
+document.getElementById('D').addEventListener('click', function() {
+    direction = 'RIGHT';
+    moveSnake();
 });
